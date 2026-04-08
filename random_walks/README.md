@@ -10,6 +10,23 @@ The biggest question we'll ask is:
 
 ---
 
+## Quick Demo Workflow
+
+Each notebook in this folder is now set up as a short demo:
+
+1. Change a few config values near the top.
+2. Run all cells top to bottom.
+3. Inspect saved images/CSV files under `outputs/...`.
+
+Main knobs to play with:
+
+- `RANDOM_SEED`
+- `N_TRIALS`
+- `MAX_STEPS`
+- `N_DIRECTIONS` (general notebook only)
+
+---
+
 ## The core problem
 
 We start at the origin and take random steps. Define the position after $n$ steps:
@@ -184,6 +201,7 @@ Current notebook defaults:
 - `RANDOM_SEED = 42`
 - `N_TRIALS = 10`
 - `MAX_STEPS = 20_000`
+- `N_DIRECTIONS = 8` (general notebook)
 
 So we compute a **truncated return time**:
 
@@ -238,7 +256,10 @@ Each notebook generates:
   - return time
   - max displacement
 - A final **overlay plot**:
-  - all walks drawn together
+  - 1D notebook: all walks overlaid in one panel
+  - 2D notebooks: two side-by-side panels
+    - left: walks with a solution (returned to origin)
+    - right: walks without a solution (censored)
 
 The overlay plots visually show:
 
