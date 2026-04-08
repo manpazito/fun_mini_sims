@@ -1,6 +1,6 @@
 # Stochastic Random Walks
 
-I actually got the idea from [mathemagicland](www.instagram.com/mathemagiclandinsta)'s random walk [video](https://www.instagram.com/p/DW2BveQklDj/)!
+I actually got the idea from [mathemagicland](www.instagram.com/mathemagiclandinsta)'s random walk [video](https://www.instagram.com/mathemagiclandinsta/reel/DW2BveQklDj/)!
 
 A **random walk** is a simple but powerful idea: you start at some point, and at each step you move in a randomly chosen direction. The path looks chaotic, but when you analyze it mathematically, very clean patterns emerge.
 
