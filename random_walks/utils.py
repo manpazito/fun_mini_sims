@@ -535,6 +535,13 @@ def _plot_2d_overlay_panel(ax, all_paths, title):
     ax.legend(loc="best")
 
 
+def plot_overlay_2d(all_paths, out_path, title):
+    """Single-panel 2D overlay helper for simple notebook usage."""
+    fig, ax = plt.subplots(figsize=(7, 7))
+    _plot_2d_overlay_panel(ax, all_paths, title)
+    save_and_show(fig, out_path)
+
+
 def plot_overlay_1d_solution_split(
     paths_with_solution,
     paths_without_solution,
