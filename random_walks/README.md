@@ -1,302 +1,296 @@
-# Stochastic Random Walks
+# Stochastic Random Walks: Time to Return Home
 
-I actually got the idea from [mathemagicland](www.instagram.com/mathemagiclandinsta)'s random walk [video](https://www.instagram.com/mathemagiclandinsta/reel/DW2BveQklDj/)!
+I got the idea from [mathemagicland](www.instagram.com/mathemagiclandinsta)'s random walk [video](https://www.instagram.com/p/DW2BveQklDj/)!
 
-A **random walk** is a simple but powerful idea: you start at some point, and at each step you move in a randomly chosen direction. The path looks chaotic, but when you analyze it mathematically, very clean patterns emerge.
+This is a huge concept in stochastic processes and fundamental for understanding diffusion, recurrence, and hitting times in random systems, with applications ranging from physics and finance to algorithms and network theory.
 
-Random walks appear everywhere: particle motion, diffusion, stock prices, search algorithms, and more.
+The biggest question we'll ask is:
 
----
-
-## The core idea
-
-A random walk is just a sum of independent steps.
-
-If we write the position after $n$ steps as
-
-$$
-S_n = X_1 + X_2 + \cdots + X_n,
-$$
-
-where each $X_k$ is a random step, then everything about the walk comes from understanding a **single step**.
-
-Two key facts drive everything:
-
-- **Linearity of expectation**:
-  $$
-  \mathbb{E}[S_n] = n \cdot \mathbb{E}[X_1]
-  $$
-
-- **Variance adds for independent steps**:
-  $$
-  \mathrm{Var}(S_n) = n \cdot \mathrm{Var}(X_1)
-  $$
-
-So the entire analysis reduces to:
-1. What is the average of one step?
-2. How much does one step spread things out?
+> **How long does it take to come back home?**
 
 ---
 
-## The simplest example: 1D unit walk
+## The core problem
 
-You start at
-
-$$
-X_0 = 0
-$$
-
-and at each step:
-
-- move $+1$ with probability $1/2$
-- move $-1$ with probability $1/2$
-
-Let the step be
+We start at the origin and take random steps. Define the position after $n$ steps:
 
 $$
-\xi_k =
-\begin{cases}
-+1 & \text{with probability } 1/2 \\
--1 & \text{with probability } 1/2
-\end{cases}
+S_n = X_1 + X_2 + \cdots + X_n
 $$
 
-Then
+We are interested in the **first return time**:
 
 $$
-X_n = \sum_{k=1}^n \xi_k.
+T = \inf \{ n \ge 1 : S_n = 0 \}
 $$
 
-### Expected position
+This is the number of steps it takes to return to the origin *for the first time* after leaving it.
 
-Each step is perfectly symmetric, so there is no preferred direction:
-
-$$
-\mathbb{E}[\xi_k] = 0
-\quad \Rightarrow \quad
-\mathbb{E}[X_n] = 0.
-$$
-
-On average, the walker stays centered.
-
-### Variance
-
-Each step always has magnitude 1, so
-
-$$
-\mathbb{E}[\xi_k^2] = 1,
-\quad
-\mathrm{Var}(\xi_k) = 1.
-$$
-
-Since variance adds:
-
-$$
-\mathrm{Var}(X_n) = n.
-$$
-
-### Result
-
-$$
-\boxed{
-\mathbb{E}[X_n] = 0,
-\quad
-\mathrm{Var}(X_n) = n
-}
-$$
-
-So the walk does not drift, but it spreads out like $\sqrt{n}$.
+All simulations in this project are estimating properties of $T$.
 
 ---
 
-## The 2D rotational walk (from the video)
+## Novelty
 
-Now instead of left/right, each step chooses one of four directions:
+Random walks have two competing behaviors:
 
-- $0^\circ$ → $(1,0)$  
-- $90^\circ$ → $(0,1)$  
-- $180^\circ$ → $(-1,0)$  
-- $270^\circ$ → $(0,-1)$  
+- They spread out over time  
+- But they also keep coming back
 
-each with probability $1/4$.
+In 1D and 2D:
 
-Let each step be $V_k$, and define
-
-$$
-S_n = \sum_{k=1}^n V_k = (X_n, Y_n).
-$$
-
-### Expected position
-
-Again, the system is perfectly symmetric:
+- The walk returns to the origin with probability 1  
+- But the time it takes behaves in a very surprising way:
 
 $$
-\mathbb{E}[V_k] = (0,0)
-\quad \Rightarrow \quad
-\mathbb{E}[S_n] = (0,0).
-$$
-
-No direction is favored.
-
-### Variance (coordinate-wise)
-
-Look at the $x$-coordinate of one step:
-
-- $+1$ with probability $1/4$
-- $-1$ with probability $1/4$
-- $0$ with probability $1/2$
-
-So:
-
-$$
-\mathbb{E}[X_1] = 0,
-\quad
-\mathbb{E}[X_1^2] = \frac{1}{2},
-\quad
-\mathrm{Var}(X_1) = \frac{1}{2}.
-$$
-
-Same for $Y_1$.
-
-By independence:
-
-$$
-\mathrm{Var}(X_n) = \frac{n}{2},
-\quad
-\mathrm{Var}(Y_n) = \frac{n}{2}.
-$$
-
-### Distance from the origin
-
-The squared distance is:
-
-$$
-\|S_n\|^2 = X_n^2 + Y_n^2.
-$$
-
-Taking expectation:
-
-$$
-\mathbb{E}[\|S_n\|^2]
-= \mathrm{Var}(X_n) + \mathrm{Var}(Y_n)
-= \frac{n}{2} + \frac{n}{2}
-= n.
-$$
-
-### Result
-
-$$
-\boxed{
-\mathbb{E}[S_n] = (0,0),
-\quad
-\mathbb{E}[\|S_n\|^2] = n
-}
-$$
-
-Each step contributes exactly one unit of expected squared displacement.
-
----
-
-## A cleaner view: complex numbers
-
-We can represent directions as complex numbers:
-
-$$
-1,\quad i,\quad -1,\quad -i.
-$$
-
-Each step is a random variable $Z_k$ chosen uniformly from these.
-
-Then:
-
-$$
-W_n = \sum_{k=1}^n Z_k.
-$$
-
-Now everything becomes simpler:
-
-- symmetry ⇒ $\mathbb{E}[Z_k] = 0$
-- unit length ⇒ $|Z_k| = 1$
-
-So:
-
-$$
-\mathbb{E}[W_n] = 0,
-\quad
-\mathbb{E}[|W_n|^2] = n.
-$$
-
----
-
-## Generalization: $N$ equally spaced directions
-
-The 4-direction walk is just the case $N = 4$.
-
-Now suppose we allow $N$ equally spaced directions:
-
-$$
-0,\; \frac{2\pi}{N},\; \frac{4\pi}{N},\; \dots,\; \frac{2\pi(N-1)}{N}.
-$$
-
-Each step is
-
-$$
-Z_k = e^{2\pi i J_k / N},
-$$
-
-where $J_k$ is uniform on $\{0,1,\dots,N-1\}$.
-
-### Expected value
-
-The average of all $N$-th roots of unity is zero:
-
-$$
-\mathbb{E}[Z_k] = 0
-\quad \Rightarrow \quad
-\mathbb{E}[W_n] = 0.
-$$
-
-### Mean squared distance
-
-Each step still has length 1:
-
-$$
-|Z_k|^2 = 1.
+\mathbb{E}[T] = \infty
 $$
 
 So:
+- You will almost surely return  
+- But there is no finite average return time
 
-$$
-\mathbb{E}[|W_n|^2] = n.
-$$
-
-### Coordinate variances
-
-For $N \ge 3$, the walk is rotationally symmetric, so variance splits evenly:
-
-$$
-\mathrm{Var}(X_n) = \mathrm{Var}(Y_n) = \frac{n}{2}.
-$$
+This happens because of heavy tails: most walks return quickly, but some take extremely long.
 
 ---
 
-## Final takeaway
+## Case 1: 1D unit random walk
 
-A random walk may look unpredictable, but its large-scale behavior is governed by a few simple rules.
+### Model
 
-As long as:
-- steps are independent  
-- steps are unbiased (mean 0)  
-- steps have unit length  
+- Start at $0$
+- Each step:
+  - $+1$ with probability $1/2$
+  - $-1$ with probability $1/2$
 
-then:
+### Return behavior
+
+- Guaranteed to return eventually  
+- But expected return time:
 
 $$
-\boxed{
+\mathbb{E}[T] = \infty
+$$
+
+### Time complexity interpretation
+
+Think of each simulation as an algorithm that runs until return.
+
+- **Best case:**  
+  Return in 2 steps  
+  (right, then left or vice versa)  
+  → $O(1)$
+
+- **Typical behavior:**  
+  Often returns relatively quickly, but highly variable  
+
+- **Worst case:**  
+  Arbitrarily large number of steps  
+  → unbounded (no finite upper limit)
+
+- **Expected time:**  
+  Infinite (due to rare extremely long walks)
+
+---
+
+## Case 2: 2D rotational walk
+
+This is the idea that [mathemagicland](https://www.instagram.com/mathemagiclandinsta) presents. A walk where we take a step in a random cardinal direction.
+
+### Model
+
+Each step chooses one of:
+
+- $(1,0)$  
+- $(0,1)$  
+- $(-1,0)$  
+- $(0,-1)$  
+
+with equal probability.
+
+### Return behavior
+
+- Still guaranteed to return  
+- Still:
+
+$$
+\mathbb{E}[T] = \infty
+$$
+
+### Time complexity interpretation
+
+- **Best case:**  
+  Return in 2 steps (go out, come back)  
+  → $O(1)$
+
+- **Typical behavior:**  
+  Takes longer than 1D on average (more directions to wander)
+
+- **Worst case:**  
+  Unbounded  
+
+- **Expected time:**  
+  Infinite  
+
+---
+
+## Case 3: General $N$-direction walk
+
+### Model
+
+At each step, choose uniformly from:
+
+$$
+\theta = \frac{2\pi k}{N}, \quad k = 0, 1, \dots, N-1
+$$
+
+and move one unit in that direction.
+
+### Return behavior
+
+- For $N \ge 3$ (2D walks), still recurrent  
+- So:
+
+$$
+\mathbb{E}[T] = \infty
+$$
+
+### Time complexity interpretation
+
+- **Best case:**  
+  Immediate reversal → $O(1)$
+
+- **Typical behavior:**  
+  More directions ⇒ more wandering ⇒ longer return times
+
+- **Worst case:**  
+  Unbounded  
+
+- **Expected time:**  
+  Infinite  
+
+---
+
+## What the simulations actually compute
+
+In practice, we cannot simulate infinitely long walks.
+
+Each notebook introduces a limit:
+
+- `MAX_STEPS`
+
+Current notebook defaults:
+
+- `RANDOM_SEED = 42`
+- `N_TRIALS = 10`
+- `MAX_STEPS = 20_000`
+
+So we compute a **truncated return time**:
+
+$$
+T_{\text{trunc}} = \min(T, \text{MAX\_STEPS})
+$$
+
+This means:
+
+- If the walk returns → record actual return time  
+- If not → mark as incomplete (censored)
+
+So the simulations estimate:
+
+$$
+\mathbb{E}[\min(T, \text{MAX\_STEPS})]
+$$
+
+which is finite and observable.
+
+---
+
+## What you should expect to see
+
+Across all notebooks:
+
+### 1. Many short walks
+- Quick returns (small $T$)
+
+### 2. Some medium walks
+- Wandering before returning
+
+### 3. Rare very long walks
+- These dominate the average
+- These are why $\mathbb{E}[T] = \infty$
+
+### 4. Heavy-tailed distributions
+- Histograms will have long right tails
+- Increasing `MAX_STEPS` increases observed averages
+
+---
+
+## Visualization outputs
+
+Each notebook generates:
+
+- A **single walk** (stops at first return)
+- Monte Carlo statistics:
+  - return times
+  - max distance
+- Histograms of:
+  - return time
+  - max displacement
+- A final **overlay plot**:
+  - all walks drawn together
+
+The overlay plots visually show:
+
+- Most paths stay near the origin  
+- Some paths wander far before returning  
+- Color rule in current notebooks:
+  - if there are 10 walks or fewer, each walk gets a distinct `tab10` color
+  - if there are more than 10 walks, all walks are drawn in blue
+
+### Sample output figures
+
+These images are generated by running the notebooks in this folder.
+
+#### 1D unit walk
+
+![1D single walk](outputs/unit_walk_1D/single_walk.png)
+![1D overlay walks](outputs/unit_walk_1D/overlay_walks.png)
+
+#### Mathemagicland 2D walk
+
+![2D single walk](outputs/mathemagicland_solution/single_walk.png)
+![2D return-time histogram](outputs/mathemagicland_solution/return_time_histogram.png)
+
+#### General N-direction walk
+
+![General walk single](outputs/general_walk_solution/single_walk.png)
+![General walk overlay](outputs/general_walk_solution/overlay_walks.png)
+
+---
+
+## Key takeaway
+
+Random walks are not just about where you end up, but how long it takes to return.
+
+Even though:
+
+$$
 \mathbb{E}[\text{position}] = 0,
 \quad
 \mathbb{E}[\text{distance}^2] = n
-}
 $$
 
-So even though every path is random, the overall behavior is not. The walk stays centered, and its spread grows in a perfectly predictable way.
+the return time behaves very differently:
+
+$$
+\mathbb{E}[T] = \infty
+$$
+
+So the system is:
+
+- **Stable in position**
+- **Unstable in time**
+
+You always come back home.  
+You just don’t know how long it will take.

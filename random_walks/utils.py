@@ -268,9 +268,15 @@ def plot_single_walk_1d(positions: Sequence[int], out_path: Path, title: str) ->
 
 def plot_overlay_1d(all_paths: Sequence[Sequence[int]], out_path: Path, title: str) -> None:
     fig, ax = plt.subplots(figsize=(10, 5))
-    for path in all_paths:
+    if len(all_paths) <= 10:
+        tab10 = list(plt.get_cmap("tab10").colors)
+        colors = [tab10[i] for i in range(len(all_paths))]
+    else:
+        colors = ["tab:blue"] * len(all_paths)
+
+    for path, color in zip(all_paths, colors):
         steps = np.arange(len(path))
-        ax.plot(steps, path, color="tab:blue", alpha=0.12, linewidth=0.8)
+        ax.plot(steps, path, color=color, alpha=0.45, linewidth=1.2)
 
     ax.axhline(0, color="black", linewidth=1)
     ax.set_title(title)
@@ -303,8 +309,14 @@ def plot_overlay_2d(
     title: str,
 ) -> None:
     fig, ax = plt.subplots(figsize=(7, 7))
-    for xs, ys in all_paths:
-        ax.plot(xs, ys, color="tab:blue", alpha=0.1, linewidth=0.8)
+    if len(all_paths) <= 10:
+        tab10 = list(plt.get_cmap("tab10").colors)
+        colors = [tab10[i] for i in range(len(all_paths))]
+    else:
+        colors = ["tab:blue"] * len(all_paths)
+
+    for (xs, ys), color in zip(all_paths, colors):
+        ax.plot(xs, ys, color=color, alpha=0.45, linewidth=1.2)
 
     ax.scatter([0], [0], color="black", marker="*", s=160, label="origin")
     ax.set_title(title)
